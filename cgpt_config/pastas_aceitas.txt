@@ -1,0 +1,9 @@
+GBA
+GB
+GBC
+NES
+SNES
+MegaDrive
+MasterSystem
+N64
+PSX
