@@ -1,9 +1,0 @@
-GBA: .gba
-GB: .gb
-GBC: .gbc
-NES: .nes
-SNES: .sfc, .smc
-MegaDrive: .md, .gen, .smd, .bin
-MasterSystem: .sms
-N64: .n64, .z64, .v64
-PSX: .iso, .cue
