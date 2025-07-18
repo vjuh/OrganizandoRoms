@@ -4,6 +4,7 @@
   <consolesTxt>./cgpt_config/consoles.txt</consolesTxt>
   <pastasAceitasTxt>./cgpt_config/pastas_aceitas.txt</pastasAceitasTxt>
   <sevenZipPath>C:\Program Files\7-Zip\7z.exe</sevenZipPath>
+  <romsPossiveisTxt>./cgpt_config/pastas_aceitas.txt</romsPossiveisTxt>
   
   <screenScraper>
     <user>SEU_USUARIO</user>

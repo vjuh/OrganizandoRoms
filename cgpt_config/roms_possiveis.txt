@@ -1,0 +1,1 @@
+.zip, .7z, .iso, .sfc, .smc, .gba, .gbc, .nes, .md, .sms, .bin, .cue

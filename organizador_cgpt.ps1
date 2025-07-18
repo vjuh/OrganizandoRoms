@@ -22,12 +22,14 @@ function Carregar-Config {
             logs = $config.config.logsPath
             consoles = $config.config.consolesTxt
             aceitas = $config.config.pastasAceitasTxt
+            romsPossiveis = $config.config.romsPossiveisTxt
             sevenzip = $config.config.sevenZipPath
             scraper_user = $config.config.screenScraper.user
             scraper_pass = $config.config.screenScraper.password
             scraper_dev = $config.config.screenScraper.devId
             ignorarCompactacao = $config.config.ignorarCompactacao -split "," | ForEach-Object { $_.Trim() }
             pastasIgnorar = $config.config.pastasIgnorar -split "," | ForEach-Object { $_.Trim() }
+            ignorarDuplicatas = $config.config.ignorarDuplicatas -split "," | ForEach-Object { $_.Trim() }
         }
     } catch {
         Mostrar-Erro "Erro ao carregar configuração: $_"
@@ -70,6 +72,16 @@ function Get-ConsolesMap {
     }
 }
 
+function Get-RomsPossiveis {
+    param($cfg)
+    try {
+        return Get-Content $cfg.romsPossiveis | ForEach-Object { $_.Trim().ToLower() }
+    } catch {
+        Mostrar-Erro "Erro ao carregar extensões de ROMs possíveis: $_"
+        return @()
+    }
+}
+
 function Organizar-ROMs-Por-Console {
     param ($romsPath, $map)
     try {
@@ -99,7 +111,7 @@ function Organizar-ROMs-Por-Console {
     }
 }
 
-function Renomear-Pastas-Invalidas {
+function Renomear-Pastas-Proibidas {
     param ($romsPath, $permitidasPath)
     try {
         $permitidas = Get-Content $permitidasPath | ForEach-Object { $_.Trim().ToLower() }
@@ -139,7 +151,7 @@ function Gerar-Log-Arquivos {
 }
 
 function Detectar-Duplicatas {
-    param ($romsPath, $logPath)
+    param ($romsPath, $logPath, $ignorarDuplicatas)
     
     try {
         Atualizar-Progresso -mensagem "Buscando duplicatas..." -percentual 0
@@ -147,7 +159,9 @@ function Detectar-Duplicatas {
         $duplicatas = @{}
         $romsFolder = (Get-Item $romsPath).Name
 
-        $arquivos = Get-ChildItem -Path $romsPath -Recurse -File
+        $arquivos = Get-ChildItem -Path $romsPath -Recurse -File | Where-Object {
+            $_.Extension -notin $ignorarDuplicatas
+        }
         $total = $arquivos.Count
         $processados = 0
 
@@ -177,20 +191,11 @@ function Detectar-Duplicatas {
                 "`n" | Out-File -Append -Encoding UTF8 $logDuplicatas
             }
 
-            # Minimizar a janela principal
-            if ($global:formPrincipal) {
-                $global:formPrincipal.WindowState = [System.Windows.Forms.FormWindowState]::Minimized
-            }
-
             $formDuplicatas = New-Object System.Windows.Forms.Form
             $formDuplicatas.Text = "Duplicatas encontradas ($($duplicatas.Count) grupos)"
             $formDuplicatas.Size = New-Object System.Drawing.Size(800,500)
             $formDuplicatas.StartPosition = "CenterScreen"
-            $formDuplicatas.Add_FormClosed({
-                if ($global:formPrincipal) {
-                    $global:formPrincipal.WindowState = [System.Windows.Forms.FormWindowState]::Normal
-                }
-            })
+            $formDuplicatas.TopMost = $true  # Garante que fique na frente
 
             $treeView = New-Object System.Windows.Forms.TreeView
             $treeView.Size = New-Object System.Drawing.Size(760,400)
@@ -218,12 +223,29 @@ function Detectar-Duplicatas {
                 }
                 
                 $treeView.Nodes.Add($groupNode) | Out-Null
+                $groupNode.Expand() # Expande automaticamente cada grupo
             }
+
+            # Botão para expandir/recolher tudo
+            $btnExpandir = New-Object System.Windows.Forms.Button
+            $btnExpandir.Text = "Expandir/Recolher Tudo"
+            $btnExpandir.Size = New-Object System.Drawing.Size(160,30)
+            $btnExpandir.Location = New-Object System.Drawing.Point(10,420)
+            $btnExpandir.Add_Click({
+                $expandir = $treeView.Nodes[0].IsExpanded -eq $false
+                foreach ($node in $treeView.Nodes) {
+                    if ($expandir) {
+                        $node.Expand()
+                    } else {
+                        $node.Collapse()
+                    }
+                }
+            })
 
             $buttonExcluir = New-Object System.Windows.Forms.Button
             $buttonExcluir.Text = "Excluir selecionados"
             $buttonExcluir.Size = New-Object System.Drawing.Size(160,30)
-            $buttonExcluir.Location = New-Object System.Drawing.Point(10,420)
+            $buttonExcluir.Location = New-Object System.Drawing.Point(180,420)
 
             $buttonExcluir.Add_Click({
                 $itemsToDelete = @()
@@ -259,6 +281,7 @@ function Detectar-Duplicatas {
             })
 
             $formDuplicatas.Controls.Add($treeView)
+            $formDuplicatas.Controls.Add($btnExpandir)
             $formDuplicatas.Controls.Add($buttonExcluir)
             $formDuplicatas.ShowDialog()
         } else {
@@ -290,7 +313,7 @@ function Compactar-ROMs {
             Atualizar-Progresso -mensagem "Compactando: $($arquivo.Name)" -percentual $percentual
 
             $arquivoOriginal = $arquivo.FullName
-            $arquivoCompactado = "$($arquivoOriginal).7z"
+            $arquivoCompactado = "$($arquivo.DirectoryName)\$([System.IO.Path]::GetFileNameWithoutExtension($arquivo.Name)).7z"
 
             if (!(Test-Path $arquivoCompactado)) {
                 & "$sevenZipPath" a -t7z -mx9 "$arquivoCompactado" "$arquivoOriginal" | Out-Null
@@ -443,10 +466,10 @@ $panel.Location = New-Object Drawing.Point(10,10)
 $panel.Size = New-Object Drawing.Size(565,150)
 $panel.BorderStyle = [System.Windows.Forms.BorderStyle]::FixedSingle
 
-# Botão Organizar ROMs
+# Botão Organizar ROMs por Console
 $btnOrganizar = New-Object Windows.Forms.Button
-$btnOrganizar.Text = "Organizar ROMs"
-$btnOrganizar.Size = New-Object Drawing.Size(120,40)
+$btnOrganizar.Text = "Organizar ROMs por Console"
+$btnOrganizar.Size = New-Object Drawing.Size(150,40)
 $btnOrganizar.Location = New-Object Drawing.Point(20,20)
 $btnOrganizar.Add_Click({
     $cfg = Carregar-Config
@@ -462,17 +485,17 @@ $btnOrganizar.Add_Click({
     Atualizar-Progresso -mensagem "Pronto" -percentual 0
 })
 
-# Botão Renomear Pastas
-$btnRenomear = New-Object Windows.Forms.Button
-$btnRenomear.Text = "Renomear Pastas"
-$btnRenomear.Size = New-Object Drawing.Size(120,40)
-$btnRenomear.Location = New-Object Drawing.Point(150,20)
-$btnRenomear.Add_Click({
+# Botão # Pastas Proibidas
+$btnPastasProibidas = New-Object Windows.Forms.Button
+$btnPastasProibidas.Text = "# Pastas Proibidas"
+$btnPastasProibidas.Size = New-Object Drawing.Size(150,40)
+$btnPastasProibidas.Location = New-Object Drawing.Point(180,20)
+$btnPastasProibidas.Add_Click({
     $cfg = Carregar-Config
     if ($cfg) {
-        $success = Renomear-Pastas-Invalidas -romsPath $cfg.roms -permitidasPath $cfg.aceitas
+        $success = Renomear-Pastas-Proibidas -romsPath $cfg.roms -permitidasPath $cfg.aceitas
         if ($success) {
-            [System.Windows.Forms.MessageBox]::Show("Pastas inválidas renomeadas!", "CGPT", 'OK', 'Information')
+            [System.Windows.Forms.MessageBox]::Show("Pastas proibidas renomeadas!", "CGPT", 'OK', 'Information')
         }
     }
     Atualizar-Progresso -mensagem "Pronto" -percentual 0
@@ -482,11 +505,11 @@ $btnRenomear.Add_Click({
 $btnDuplicatas = New-Object Windows.Forms.Button
 $btnDuplicatas.Text = "Ver Duplicatas"
 $btnDuplicatas.Size = New-Object Drawing.Size(120,40)
-$btnDuplicatas.Location = New-Object Drawing.Point(280,20)
+$btnDuplicatas.Location = New-Object Drawing.Point(340,20)
 $btnDuplicatas.Add_Click({
     $cfg = Carregar-Config
     if ($cfg) {
-        $success = Detectar-Duplicatas -romsPath $cfg.roms -logPath $cfg.logs
+        $success = Detectar-Duplicatas -romsPath $cfg.roms -logPath $cfg.logs -ignorarDuplicatas $cfg.ignorarDuplicatas
     }
     Atualizar-Progresso -mensagem "Pronto" -percentual 0
 })
@@ -495,7 +518,7 @@ $btnDuplicatas.Add_Click({
 $btnCompactar = New-Object Windows.Forms.Button
 $btnCompactar.Text = "Compactar ROMs"
 $btnCompactar.Size = New-Object Drawing.Size(120,40)
-$btnCompactar.Location = New-Object Drawing.Point(410,20)
+$btnCompactar.Location = New-Object Drawing.Point(470,20)
 $btnCompactar.Add_Click({
     $cfg = Carregar-Config
     if ($cfg) {
@@ -511,14 +534,14 @@ $btnCompactar.Add_Click({
 $btnScraping = New-Object Windows.Forms.Button
 $btnScraping.Text = "Iniciar Scraping"
 $btnScraping.Size = New-Object Drawing.Size(240,40)
-$btnScraping.Location = New-Object Drawing.Point(150,80)
+$btnScraping.Location = New-Object Drawing.Point(180,80)
 $btnScraping.Add_Click({
     $cfg = Carregar-Config
     if ($cfg) {
         $map = Get-ConsolesMap -cfg $cfg
-        if ($map) {
-            $roms = Get-ChildItem -Recurse -Path $cfg.roms -Include *.zip,*.7z,*.iso,*.sfc,*.smc,*.gba,*.gbc,*.nes,*.md,*.sms -File | Where-Object { $_.Name -match "\(pt-br\)" }
-            
+        $extensoes = Get-RomsPossiveis -cfg $cfg
+        if ($map -and $extensoes) {
+            $roms = Get-ChildItem -Recurse -Path $cfg.roms -Include $extensoes -File
             $total = $roms.Count
             $i = 0
 
@@ -557,7 +580,7 @@ $btnScraping.Add_Click({
 
 # Adiciona botões ao painel
 $panel.Controls.Add($btnOrganizar)
-$panel.Controls.Add($btnRenomear)
+$panel.Controls.Add($btnPastasProibidas)
 $panel.Controls.Add($btnDuplicatas)
 $panel.Controls.Add($btnCompactar)
 $panel.Controls.Add($btnScraping)

@@ -1,0 +1,83 @@
+Como usar o script:
+Pré-requisitos:
+
+7-Zip instalado no caminho padrão (C:\Program Files\7-Zip\7z.exe)
+
+Caso esteja em outro local, altere a variável $sevenZipPath no início do script
+
+Funcionamento:
+
+Execute o script
+
+Clique em "Selecionar Pasta"
+
+Escolha a pasta contendo seus arquivos compactados
+
+O script irá:
+
+Criar subpastas com o nome de cada arquivo compactado (sem extensão)
+
+Descompactar cada arquivo em sua respectiva subpasta
+
+Excluir o arquivo compactado original após descompactação
+
+Formatos suportados:
+
+.7z
+
+.zip
+
+.rar
+
+(Pode adicionar outros formatos editando a variável $extensoesCompactadas)
+
+Feedback visual:
+
+Barra de progresso mostrando o andamento
+
+Contagem de arquivos processados
+
+Nome do arquivo sendo descompactado
+
+Personalização:
+Você pode modificar o script para:
+
+Alterar os tipos de arquivo suportados (edite $extensoesCompactadas)
+
+Mudar o local de instalação do 7-Zip (edite $sevenZipPath)
+
+Desativar a exclusão dos arquivos originais (comente a linha Remove-Item)
+
+Observação: O script foi projetado para ser simples e direto ao ponto, com interface amigável e feedback visual durante o processo.
+
+
+Principais alterações:
+Remoção da criação de subpastas:
+
+Os arquivos agora são descompactados diretamente na pasta selecionada
+
+Removida a linha que criava a subpasta com o nome do arquivo
+
+Simplificação do comando 7-Zip:
+
+O parâmetro de saída (-o) agora aponta diretamente para a pasta selecionada
+
+Mantém todas as outras funcionalidades originais
+
+Funcionamento:
+
+Selecione uma pasta com arquivos compactados
+
+Todos os arquivos serão descompactados na mesma pasta
+
+Os arquivos compactados originais serão excluídos após descompactação
+
+Benefícios:
+
+Mais simples e direto
+
+Mantém a organização original dos arquivos
+
+Continua com feedback visual do progresso
+
+Observação: Se existirem arquivos com nomes duplicados, o 7-Zip pode sobrescrever os arquivos existentes (comportamento padrão com o parâmetro -y).
