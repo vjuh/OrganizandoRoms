@@ -4,13 +4,18 @@
   <consolesTxt>./cgpt_config/consoles.txt</consolesTxt>
   <pastasAceitasTxt>./cgpt_config/pastas_aceitas.txt</pastasAceitasTxt>
   <sevenZipPath>C:\Program Files\7-Zip\7z.exe</sevenZipPath>
+  
   <screenScraper>
     <user>SEU_USUARIO</user>
     <password>SUA_SENHA</password>
     <devId>SEU_DEV_ID</devId>
   </screenScraper>
+  
   <theGamesDB apiKey="SUA_CHAVE" />
   <hfsdb apiKey="SUA_CHAVE" />
   <arcadedb />
   <igdb clientId="SEU_CLIENT_ID" clientSecret="SEU_CLIENT_SECRET" />
+  
+    <ignorarCompactacao>.zip, .7z, .txt, .xml, .png, .jpg, .jpeg, .mp4</ignorarCompactacao>
+    <pastasIgnorar>videos, manuals, images</pastasIgnorar>
 </config>

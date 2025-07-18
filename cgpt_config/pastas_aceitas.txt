@@ -7,3 +7,4 @@ MegaDrive
 MasterSystem
 N64
 PSX
+atari5200

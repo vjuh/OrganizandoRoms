@@ -1,0 +1,237 @@
+﻿ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\Hunt & Score (USA).zip
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\Hunt e Score (USA).zip
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\Immies & Aggies (USA) (Proto).zip
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\Immies e Aggies (USA) (Proto).zip
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Cheese (USA) (Proto)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Dragonfire (USA)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Cheese (USA) (Proto)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Dragonfire (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Cheese (USA) (Proto)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Dragonfire (USA)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Dukes of Hazzard (USA) (Proto)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Dukes of Hazzard (USA)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Dukes of Hazzard (USA) (Proto)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Dukes of Hazzard (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Dukes of Hazzard (USA) (Proto)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Dukes of Hazzard (USA)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Hunt & Score (USA)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Hunt e Score (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Immies & Aggies (USA) (Proto)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Immies e Aggies (USA) (Proto)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Inca Gold - Spider Monster (Europe)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Karate (USA)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Inca Gold - Spider Monster (Europe)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Karate (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Inca Gold - Spider Monster (Europe)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Karate (USA)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Innerspace (USA) (Proto)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Laser Gates (USA)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Innerspace (USA) (Proto)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Laser Gates (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Innerspace (USA) (Proto)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Laser Gates (USA)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Mind Maze (USA) (Proto)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Mines of Minos (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Criminal Persuit (Europe)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Mysterious Thief, A (USA) (Proto)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Phantom II - Pirate (USA) (Unl)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Pirate Special Edition (USA) (Unl)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Phantom II - Pirate (USA) (Unl)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Pirate Special Edition (USA) (Unl)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Phantom II - Pirate (USA) (Unl)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Pirate Special Edition (USA) (Unl)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Skeleton (USA) (Unl)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Skeleton+ (USA) (Unl)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Skeleton (USA) (Unl)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Skeleton+ (USA) (Unl)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Skeleton (USA) (Unl)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Skeleton+ (USA) (Unl)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Last Starfighter, The (USA) (Proto)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Solaris (USA)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Last Starfighter, The (USA) (Proto)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Solaris (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Last Starfighter, The (USA) (Proto)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Solaris (USA)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Space Treat (USA) (Unl)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Space Treat Deluxe (USA) (Unl)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Space Treat (USA) (Unl)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Space Treat Deluxe (USA) (Unl)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Space Treat (USA) (Unl)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Space Treat Deluxe (USA) (Unl)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Immies & Aggies (USA) (Proto)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Spectracube Invasion (Europe)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Immies & Aggies (USA) (Proto)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Spectracube Invasion (Europe)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Immies & Aggies (USA) (Proto)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Spectracube Invasion (Europe)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Firebug (Europe)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Spinning Fireball (USA) (Proto)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Firebug (Europe)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Spinning Fireball (USA) (Proto)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Firebug (Europe)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Spinning Fireball (USA) (Proto)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Meteoroids (USA) (Proto)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Suicide Mission (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Asterix (USA)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Taz (USA)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Asterix (USA)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Taz (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Asterix (USA)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Taz (USA)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Thrust+ DC Edition (USA) (Unl)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Thrust+ Platinum (USA) (Unl)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Thrust+ DC Edition (USA) (Unl)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Thrust+ Platinum (USA) (Unl)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Thrust+ DC Edition (USA) (Unl)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Thrust+ Platinum (USA) (Unl)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Targ (USA) (Proto)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Universal Chaos (USA)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Targ (USA) (Proto)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Universal Chaos (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Targ (USA) (Proto)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Universal Chaos (USA)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Computer Chess (USA) (Proto)-image.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Video Chess (USA)-image.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Computer Chess (USA) (Proto)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Video Chess (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Computer Chess (USA) (Proto)-thumb.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Video Chess (USA)-thumb.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Cheese (USA) (Proto)-manual.pdf
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Dragonfire (USA)-manual.pdf
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Hunt & Score (USA)-manual.pdf
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Hunt e Score (USA)-manual.pdf
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Innerspace (USA) (Proto)-manual.pdf
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Laser Gates (USA)-manual.pdf
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Skeleton (USA) (Unl)-manual.pdf
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Skeleton+ (USA) (Unl)-manual.pdf
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Last Starfighter, The (USA) (Proto)-manual.pdf
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Solaris (USA)-manual.pdf
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Space Treat (USA) (Unl)-manual.pdf
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Space Treat Deluxe (USA) (Unl)-manual.pdf
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Asterix (USA)-manual.pdf
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Taz (USA)-manual.pdf
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Thrust+ DC Edition (USA) (Unl)-manual.pdf
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Thrust+ Platinum (USA) (Unl)-manual.pdf
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Targ (USA) (Proto)-manual.pdf
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Universal Chaos (USA)-manual.pdf
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Computer Chess (USA) (Proto)-manual.pdf
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\manuals\Video Chess (USA)-manual.pdf
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Cheese (USA) (Proto)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Dragonfire (USA)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Dukes of Hazzard (USA) (Proto)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Dukes of Hazzard (USA)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Hunt & Score (USA)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Hunt e Score (USA)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Inca Gold - Spider Monster (Europe)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Karate (USA)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Innerspace (USA) (Proto)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Laser Gates (USA)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Criminal Persuit (Europe)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Mysterious Thief, A (USA) (Proto)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Phantom II - Pirate (USA) (Unl)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Pirate Special Edition (USA) (Unl)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Skeleton (USA) (Unl)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Skeleton+ (USA) (Unl)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Last Starfighter, The (USA) (Proto)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Solaris (USA)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Space Treat (USA) (Unl)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Space Treat Deluxe (USA) (Unl)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Immies & Aggies (USA) (Proto)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Spectracube Invasion (Europe)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Firebug (Europe)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Spinning Fireball (USA) (Proto)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Meteoroids (USA) (Proto)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Suicide Mission (USA)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Asterix (USA)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Taz (USA)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Thrust+ DC Edition (USA) (Unl)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Thrust+ Platinum (USA) (Unl)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Targ (USA) (Proto)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Universal Chaos (USA)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Computer Chess (USA) (Proto)-video.mp4
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\videos\Video Chess (USA)-video.mp4
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari5200\images\Ballblazer (USA)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari7800\images\Ballblazer (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Desert Falcon (USA)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari7800\images\Desert Falcon (USA)-marquee.png
+
+ORIGINAL: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari2600\images\Summer Games (USA)-marquee.png
+DUPLICATA: C:\Users\Junior\Downloads\organizador_cgpt_final_github\roms\# atari7800\images\Summer Games (USA)-marquee.png
+
