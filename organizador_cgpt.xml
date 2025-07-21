@@ -1,0 +1,61 @@
+<config>
+    <textos>
+        <tituloPrincipal>Organizador de ROMs Universal</tituloPrincipal>
+        <botaoOrganizar>Organizar ROMs por Console</botaoOrganizar>
+        <botaoPastasProibidas># Pastas Proibidas</botaoPastasProibidas>
+        <botaoDuplicatas>Ver Duplicatas</botaoDuplicatas>
+        <botaoCompactar>Compactar ROMs</botaoCompactar>
+        <botaoDescompactar>Descompactar Arquivos</botaoDescompactar>
+        <botaoScraping>Iniciar Scraping</botaoScraping>
+        <botaoSair>Sair</botaoSair>
+        <labelRomsPath>Pasta de ROMs</labelRomsPath>
+        <labelStatus>Pronto</labelStatus>
+    </textos>
+    
+    <paths>
+        <romsPath>.\roms</romsPath>
+        <logsPath>.\logs</logsPath>
+        <sevenZipPath>C:\Program Files\7-Zip\7z.exe</sevenZipPath>
+    </paths>
+    
+    <scrapers>
+        <screenScraper>
+            <user>SEU_USUARIO</user>
+            <password>SUA_SENHA</password>
+            <devId>SEU_DEV_ID</devId>
+        </screenScraper>
+		<igdb>
+			<clientId>SEU_CLIENT_ID</clientId>
+			<clientSecret>SUA_CLIENT_SECRET</clientSecret>
+		</igdb>
+        <theGamesDB>
+            <apiKey>SUA_API_KEY</apiKey>
+        </theGamesDB>
+    </scrapers>
+    
+    <extensoes>
+        <roms>.zip, .7z, .iso, .sfc, .smc, .gba, .gbc, .nes, .md, .sms, .bin, .cue, .a78</roms>
+        <ignorarCompactacao>.zip, .7z, .txt, .xml, .png, .jpg, .jpeg, .mp4</ignorarCompactacao>
+        <ignorarDuplicatas>.txt, .xml, .png, .jpg, .jpeg, .mp4</ignorarDuplicatas>
+        <compactadas>.7z, .zip, .rar</compactadas>
+        <consoles>
+            <console name="NES">
+                <extensoes>.nes,.fds</extensoes>
+            </console>
+            <console name="SNES">
+                <extensoes>.smc,.sfc</extensoes>
+            </console>
+            <console name="Game Boy">
+                <extensoes>.gb,.gbc</extensoes>
+            </console>
+            <console name="atari7800">
+                <extensoes>.a78,.a79</extensoes>
+            </console>
+        </consoles>
+    </extensoes>
+    
+    <pastas>
+        <permitidas>nes, snes, gba, gbc, genesis, psx, arcade, atari2600, psx</permitidas>
+        <ignorar>videos, manuals, images</ignorar>
+    </pastas>
+</config>
