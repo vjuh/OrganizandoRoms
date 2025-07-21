@@ -4,15 +4,16 @@ Ferramenta completa e automatizada para organização de ROMs com interface grá
 No momento apenas o ScreenScraper está configurado.
 
 ## ✅ Funcionalidades
-- Organização automática por console com base em extensões
-- Compactação individual em `.7z` com alta taxa de compressão
+- Organização automática por console com base em extensões.
+- Compactação individual em `.7z` com alta taxa de compressão.
+- Descompactação de arquivos em lote.
 - Verificação de duplicatas com interface gráfica para escolha de exclusão
-- Geração de logs completos (TXT e CSV)
-- Detecção e renomeio de pastas inválidas com prefixo `#`
+- Geração de logs completos (TXT)
+- Detecção e renomeio de pastas inválidas com prefixo `_` (detecta pastas que não são de consoles e marca com _ no inicio)
 - Scraping automático de imagens, vídeos e manuais
 - Geração e atualização do `gamelist.xml` por console
 - Interface gráfica em PowerShell (Windows Forms)
-- Toda configuração centralizada em `configurar.xml`
+- Toda configuração centralizada em `.xml`
 
 ## 🛠️ Requisitos
 - PowerShell 5+ (Windows)
@@ -36,15 +37,16 @@ No momento apenas o ScreenScraper está configurado.
 
 
 ## 💡 Como usar
-0. Abra o PowerShell como administrador, navegue até a pasta que contém o arquivo e execute "./organizador_cgpt.ps1"
-0.1 Caso dê erro relacionado à politica na primeira utilização, esecute o comando "Set-ExecutionPolicy RemoteSigned" após isso, confirme com "S"
-1. Configure os caminhos e credenciais no `configurar.xml`.
-2. Coloque suas ROMs na pasta `roms/` (somente com `(pt-br)`).
+1. Configure os caminhos e credenciais no `.xml`.
+2. Coloque suas ROMs na pasta `roms/`.
 3. Execute `organizador_cgpt.ps1` com PowerShell.
+	3.1. Abra o PowerShell como administrador, navegue até a pasta que contém o arquivo e execute "./organizador_cgpt.ps1"
+	3.2. Caso dê erro relacionado à politica na primeira utilização, esecute o comando "Set-ExecutionPolicy RemoteSigned" após isso, confirme com "S"
 4. Use a interface gráfica para organizar, compactar, verificar duplicatas, baixar mídias e gerar o `gamelist.xml`.
 
 ## 🧑‍💻 Contribuições
-Contribuições são bem-vindas! Use issues ou pull requests.
+Contribuições são bem-vindas! 
+Use issues ou pull requests.
 
 
 ## 💻 Principais Correções e Melhorias:
