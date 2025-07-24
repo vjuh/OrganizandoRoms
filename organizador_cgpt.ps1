@@ -45,14 +45,14 @@ function Carregar-Config {
         # Constrói o caminho do arquivo de configuração
         $configPath = Join-Path -Path $scriptDir -ChildPath "$scriptName.xml"
 
-        Write-Host "Tentando carregar configuração de: $configPath" -ForegroundColor Cyan
+        Write-Host "Tentando carregar configuracao de: $configPath" -ForegroundColor Cyan
 
         if (-not (Test-Path -Path $configPath)) {
-            throw "Arquivo de configuração não encontrado: $configPath"
+            throw "Arquivo de configuracao nao encontrado: $configPath"
         }
 
         [xml]$xmlConfig = Get-Content -Path $configPath -ErrorAction Stop
-        Write-Host "Configuração carregada com sucesso!" -ForegroundColor Green
+        Write-Host "Configuracao carregada com sucesso!" -ForegroundColor Green
 
         # Cria estrutura de configuração
         $config = @{
@@ -131,9 +131,9 @@ function Carregar-Config {
         return $config
     }
     catch {
-        $errorMsg = "ERRO ao carregar configuração:`n$($_.Exception.Message)`n`nDetalhes:`n$($_.ScriptStackTrace)"
+        $errorMsg = "ERRO ao carregar configuracao:`n$($_.Exception.Message)`n`nDetalhes:`n$($_.ScriptStackTrace)"
         Write-Host $errorMsg -ForegroundColor Red
-        [System.Windows.MessageBox]::Show($errorMsg, "Erro de Configuração", 'OK', 'Error')
+        [System.Windows.MessageBox]::Show($errorMsg, "Erro de Configuracao", 'OK', 'Error')
         return $null
     }
 }
@@ -285,7 +285,7 @@ function Organizar-ROMs-Por-Console {
         # Gera log da operação
         Gerar-Log -operacao "OrganizarROMs" -itens $logItens
 
-        Atualizar-Progresso -mensagem "Organização concluída! $contador ROMs processadas." -percentual 100
+        Atualizar-Progresso -mensagem "Organizacao concluida! $contador ROMs processadas." -percentual 100
         Start-Sleep -Seconds 2
 
     } catch {
@@ -315,13 +315,19 @@ function Get-FileHashMD5 {
     }
 }
 
-# Função para verificar arquivos duplicados por hash MD5
 function Verificar-Duplicatas {
     param($pastaRoms)
 
     try {
+        # Primeiro verifica se a pasta existe
+        if (-not (Test-Path -Path $pastaRoms)) {
+            [System.Windows.Forms.MessageBox]::Show("Pasta de ROMs nao encontrada: $pastaRoms", "Erro", "OK", "Error")
+            return
+        }
+
+        # Cria o formulário
         $formDuplicatas = New-Object System.Windows.Forms.Form
-        $formDuplicatas.Text = "Verificação de Duplicatas"
+        $formDuplicatas.Text = "Verificacao de Duplicatas"
         $formDuplicatas.Size = New-Object System.Drawing.Size(800, 600)
         $formDuplicatas.StartPosition = "CenterScreen"
         $formDuplicatas.TopMost = $true
@@ -351,254 +357,346 @@ function Verificar-Duplicatas {
         $listView.Columns.Add("Data", 120) | Out-Null
         $formDuplicatas.Controls.Add($listView)
 
+        # Botão para marcar/desmarcar todos
+        $btnMarcarTodos = New-Object System.Windows.Forms.Button
+        $btnMarcarTodos.Location = New-Object System.Drawing.Point(10, 530)
+        $btnMarcarTodos.Size = New-Object System.Drawing.Size(120, 30)
+        $btnMarcarTodos.Text = "Marcar Todos"
+        $btnMarcarTodos.Add_Click({
+            $marcar = ($btnMarcarTodos.Text -eq "Marcar Todos")
+            foreach ($item in $listView.Items) {
+                if ($item.Text -ne "") {
+                    $item.Checked = $marcar
+                }
+            }
+            $btnMarcarTodos.Text = if ($marcar) { "Desmarcar Todos" } else { "Marcar Todos" }
+        })
+        $formDuplicatas.Controls.Add($btnMarcarTodos)
+
+        # Botão para marcar apenas duplicados
+        $btnMarcarDuplicados = New-Object System.Windows.Forms.Button
+        $btnMarcarDuplicados.Location = New-Object System.Drawing.Point(140, 530)
+        $btnMarcarDuplicados.Size = New-Object System.Drawing.Size(150, 30)
+        $btnMarcarDuplicados.Text = "Marcar Duplicados"
+        $btnMarcarDuplicados.Add_Click({
+            $hashesProcessados = @{}
+            foreach ($item in $listView.Items) {
+                if ($item.Text -ne "") {
+                    if ($hashesProcessados.ContainsKey($item.Text)) {
+                        $item.Checked = $true
+                    } else {
+                        $hashesProcessados[$item.Text] = $true
+                        $item.Checked = $false
+                    }
+                }
+            }
+        })
+        $formDuplicatas.Controls.Add($btnMarcarDuplicados)
+
+        # Botão para excluir selecionados
         $btnExcluir = New-Object System.Windows.Forms.Button
-        $btnExcluir.Location = New-Object System.Drawing.Point(10, 530)
+        $btnExcluir.Location = New-Object System.Drawing.Point(300, 530)
         $btnExcluir.Size = New-Object System.Drawing.Size(120, 30)
         $btnExcluir.Text = "Excluir Selecionados"
         $btnExcluir.Enabled = $false
         $formDuplicatas.Controls.Add($btnExcluir)
 
+        # Botão para fechar
         $btnFechar = New-Object System.Windows.Forms.Button
         $btnFechar.Location = New-Object System.Drawing.Point(650, 530)
         $btnFechar.Size = New-Object System.Drawing.Size(120, 30)
         $btnFechar.Text = "Fechar"
+        $btnFechar.Add_Click({ $formDuplicatas.Close() }) # Removido Gerar-Log daqui (mantido no FormClosing)
         $formDuplicatas.Controls.Add($btnFechar)
 
-        $formDuplicatas.Show()
-        [System.Windows.Forms.Application]::DoEvents()
+        # Mostra o formulário antes do processamento para atualizar a interface
+        $formDuplicatas.Add_Shown({
+        # Obtém todos os arquivos de ROM
+            $arquivos = Get-ChildItem -Path $pastaRoms -File -Recurse | 
+                        Where-Object {
+                            $global:config.Extensoes.Roms -contains $_.Extension.ToLower() -and
+                            $global:config.Extensoes.IgnorarDuplicatas -notcontains $_.Extension.ToLower() -and
+                            $_.Length -ge 1024
+                        }
 
-        # Verifica se a pasta existe
-        if (-not (Test-Path -Path $pastaRoms)) {
-            $labelStatus.Text = "Pasta de ROMs não encontrada: $pastaRoms"
-            [System.Windows.Forms.MessageBox]::Show("Pasta de ROMs não encontrada: $pastaRoms", "Erro", "OK", "Error")
-            $formDuplicatas.Close()
-            return
-        }
+            $totalArquivos = $arquivos.Count
+            $contador = 0
+            $hashes = @{}
+            $duplicatas = @{}
+            $script:logItens = @()
 
-        # Obtém todos os arquivos de ROM (exceto os muito pequenos e os na lista de ignorar)
-        $arquivos = Get-ChildItem -Path $pastaRoms -File -Recurse | 
-                    Where-Object { 
-                        $global:config.Extensoes.Roms -contains $_.Extension.ToLower() -and
-                        $global:config.Extensoes.IgnorarDuplicatas -notcontains $_.Extension.ToLower() -and
-                        $_.Length -ge 1024  # Ignora arquivos menores que 1KB
-                    }
-
-        $totalArquivos = $arquivos.Count
-        $contador = 0
-        $hashes = @{}
-        $duplicatas = @{}
-        $logItens = @()
-
-        if ($totalArquivos -eq 0) {
-            $labelStatus.Text = "Nenhum arquivo encontrado para verificar!"
-            $btnFechar.Focus()
-            [System.Windows.Forms.Application]::DoEvents()
-            return
-        }
-
-        # Calcula hashes para todos os arquivos
-        foreach ($arquivo in $arquivos) {
-            $contador++
-            $porcentagem = [math]::Round(($contador / $totalArquivos) * 100)
-            $labelStatus.Text = "Calculando hash ($contador/$totalArquivos): $($arquivo.Name)"
-            $progressBar.Value = $porcentagem
-            [System.Windows.Forms.Application]::DoEvents()
-
-            $hash = Get-FileHashMD5 -filePath $arquivo.FullName
-            if ($hash -ne $null -and $hash -ne "smallfile_ignore") {
-                if (-not $hashes.ContainsKey($hash)) {
-                    $hashes[$hash] = @()
-                }
-                $hashes[$hash] += $arquivo.FullName
-            }
-        }
-
-        # Filtra apenas os que tem duplicatas
-        $duplicatas = $hashes.GetEnumerator() | Where-Object { $_.Value.Count -gt 1 }
-
-        if ($duplicatas.Count -eq 0) {
-            $labelStatus.Text = "Nenhuma duplicata encontrada!"
-            $btnFechar.Focus()
-            [System.Windows.Forms.Application]::DoEvents()
-            return
-        }
-
-        # Preenche a lista com as duplicatas
-        foreach ($item in $duplicatas) {
-            $hash = $item.Key
-            $primeiro = $true
-
-            foreach ($caminho in $item.Value) {
-                $arquivo = Get-Item -Path $caminho
-                $caminhoRelativo = $caminho.Replace($pastaRoms, "").TrimStart('\')
-                
-                $listItem = New-Object System.Windows.Forms.ListViewItem($hash)
-                if (-not $primeiro) {
-                    $listItem.Checked = $true
-                }
-                $listItem.SubItems.Add($caminhoRelativo) | Out-Null
-                $listItem.SubItems.Add("{0:N2} MB" -f ($arquivo.Length / 1MB)) | Out-Null
-                $listItem.SubItems.Add($arquivo.LastWriteTime.ToString("dd/MM/yyyy")) | Out-Null
-                $listItem.Tag = $caminho
-                $listView.Items.Add($listItem) | Out-Null
-                
-                $logItens += "$hash | $caminhoRelativo | {0:N2} MB | $($arquivo.LastWriteTime)" -f ($arquivo.Length / 1MB)
-                $primeiro = $false
-            }
-            # Adiciona uma linha separadora
-            $listView.Items.Add("") | Out-Null
-        }
-
-        $labelStatus.Text = "Encontrados $($duplicatas.Count) conjuntos de arquivos duplicados!"
-        $btnExcluir.Enabled = $true
-        $btnExcluir.Add_Click({
-            $itensSelecionados = $listView.CheckedItems
-            if ($itensSelecionados.Count -eq 0) {
-                [System.Windows.Forms.MessageBox]::Show("Nenhum arquivo selecionado para exclusão.", "Aviso", "OK", "Information")
+            if ($totalArquivos -eq 0) {
+                $labelStatus.Text = "Nenhum arquivo encontrado para verificar!"
                 return
             }
 
-            $confirmacao = [System.Windows.Forms.MessageBox]::Show("Deseja realmente excluir os $($itensSelecionados.Count) arquivos selecionados?", "Confirmar Exclusão", "YesNo", "Question")
-            if ($confirmacao -eq "Yes") {
-                $excluidos = 0
+        # Calcula hashes para todos os arquivos
+            foreach ($arquivo in $arquivos) {
+                $contador++
+                $porcentagem = [math]::Round(($contador / $totalArquivos) * 100)
+                $labelStatus.Text = "Calculando hash ($contador/$totalArquivos): $($arquivo.Name)"
+                $progressBar.Value = $porcentagem
+                [System.Windows.Forms.Application]::DoEvents()
+
+                $hash = Get-FileHashMD5 -filePath $arquivo.FullName
+                if ($hash -ne $null -and $hash -ne "smallfile_ignore") {
+                    if (-not $hashes.ContainsKey($hash)) {
+                        $hashes[$hash] = @()
+                    }
+                    $hashes[$hash] += $arquivo.FullName
+                }
+            }
+
+        # Filtra apenas os que tem duplicatas
+            $duplicatas = $hashes.GetEnumerator() | Where-Object { $_.Value.Count -gt 1 }
+
+            if ($duplicatas.Count -eq 0) {
+                $labelStatus.Text = "Nenhuma duplicata encontrada!"
+                return
+            }
+
+        # Preenche a lista com as duplicatas
+            foreach ($item in $duplicatas) {
+                $hash = $item.Key
+                $primeiro = $true
+
+                foreach ($caminho in $item.Value) {
+                    $arquivo = Get-Item -Path $caminho
+
+                    # === CORREÇÃO: Caminho relativo calculado corretamente ===
+                    $pastaBase = [System.IO.Path]::GetFullPath($pastaRoms).TrimEnd('\','/')
+                    $caminhoAbsoluto = [System.IO.Path]::GetFullPath($caminho)
+                    $caminhoRelativo = $caminhoAbsoluto.Substring($pastaBase.Length).TrimStart('\','/')
+
+                    $listItem = New-Object System.Windows.Forms.ListViewItem($hash)
+                    if (-not $primeiro) {
+                        $listItem.Checked = $true
+                    }
+                    $listItem.SubItems.Add($caminhoRelativo) | Out-Null
+                    $listItem.SubItems.Add("{0:N2} MB" -f ($arquivo.Length / 1MB)) | Out-Null
+                    $listItem.SubItems.Add($arquivo.LastWriteTime.ToString("dd/MM/yyyy")) | Out-Null
+                    $listItem.Tag = $caminhoAbsoluto
+                    $listItem.ToolTipText = $caminhoAbsoluto  # Caminho completo no tooltip
+                    $listView.Items.Add($listItem) | Out-Null
+
+                    $script:logItens += "$hash | $caminhoRelativo | {0:N2} MB | $($arquivo.LastWriteTime)" -f ($arquivo.Length / 1MB)
+                    $primeiro = $false
+                }
+
+            # Adiciona uma linha separadora
+                $listView.Items.Add((New-Object System.Windows.Forms.ListViewItem(""))) | Out-Null
+            }
+
+            $labelStatus.Text = "Encontrados $($duplicatas.Count) conjuntos de arquivos duplicados!"
+            $btnExcluir.Enabled = $true
+        })
+
+        # Configuração do botão Excluir
+        $btnExcluir.Add_Click({
+            # === NOVO: Exclusão direta (sem confirmação) ===
+            $itensSelecionados = @($listView.CheckedItems | Where-Object { $_.Text -ne "" })
+            foreach ($item in $itensSelecionados) {
+                try {
+                    Remove-Item -Path $item.Tag -Force -ErrorAction Stop
+                    $script:logItens += "EXCLUIDO: $($item.Tag)"
+                    $listView.Items.Remove($item)
+                }
+                catch {
+                    $script:logItens += "ERRO: Falha ao excluir $($item.Tag) - $_"
+                }
+            }
+        })
+
+        # === NOVO: Clique duplo para abrir no Explorer ===
+        $listView.Add_DoubleClick({
+            if ($listView.SelectedItems.Count -gt 0) {
+                $item = $listView.SelectedItems[0]
+                $caminho = $item.Tag
+                if ($caminho -and (Test-Path $caminho)) {
+                    Start-Process explorer "/select,`"$caminho`""
+                }
+            }
+        })
+
+        # === NOVO: Tecla DELETE para exclusão direta ===
+        $formDuplicatas.KeyPreview = $true
+        $formDuplicatas.Add_KeyDown({
+            if ($_.KeyCode -eq 'Delete') {
+                $itensSelecionados = @($listView.SelectedItems | Where-Object { $_.Text -ne "" })
                 foreach ($item in $itensSelecionados) {
                     try {
-                        if ($item.Text -ne "") {  # Ignora linhas separadoras
-                            Remove-Item -Path $item.Tag -Force
-                            $excluidos++
-                            $logItens += "EXCLUIDO: $($item.Tag)"
-                        }
+                        Remove-Item -Path $item.Tag -Force -ErrorAction Stop
+                        $script:logItens += "EXCLUIDO (DEL): $($item.Tag)"
+                        $listView.Items.Remove($item)
                     }
                     catch {
-                        $logItens += "ERRO: Falha ao excluir $($item.Tag) - $_"
-                    }
-                }
-                [System.Windows.Forms.MessageBox]::Show("$excluidos arquivos excluídos com sucesso.", "Concluído", "OK", "Information")
-                
-                # Atualiza a lista removendo os itens excluídos
-                for ($i = $listView.Items.Count - 1; $i -ge 0; $i--) {
-                    if ($listView.Items[$i].Checked -and $listView.Items[$i].Text -ne "") {
-                        $listView.Items.RemoveAt($i)
+                        $script:logItens += "ERRO: Falha ao excluir $($item.Tag) - $_"
                     }
                 }
             }
         })
 
-        $btnFechar.Add_Click({ 
-            # Gera log antes de fechar
-            Gerar-Log -operacao "Duplicatas" -itens $logItens
-            $formDuplicatas.Close() 
+        # === CORREÇÃO: Log gerado uma única vez no fechamento ===
+        $formDuplicatas.Add_FormClosing({
+            if ($script:logItens.Count -gt 0) {
+                Gerar-Log -operacao "Duplicatas" -itens $script:logItens
+            }
         })
 
-        $formDuplicatas.Add_FormClosing({
-            # Garante que o log seja gerado mesmo ao fechar com o X
-            Gerar-Log -operacao "Duplicatas" -itens $logItens
-        })
+        $formDuplicatas.ShowDialog() | Out-Null
 
     } catch {
-        $labelStatus.Text = "Ocorreu um erro: $_"
         [System.Windows.Forms.MessageBox]::Show("Ocorreu um erro: $_", "Erro", "OK", "Error")
         $formDuplicatas.Close()
     }
 }
 
-# Função para compactar arquivos (ignorando pastas e extensões configuradas)
+
 function Compactar-ROMs {
-    param($pastaSelecionada)
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$pastaSelecionada
+    )
 
     try {
         $formProgresso = New-Object System.Windows.Forms.Form
         $formProgresso.Text = $global:config.Textos.BotaoCompactar
-        $formProgresso.Size = New-Object System.Drawing.Size(400, 150)
+        $formProgresso.Size = New-Object System.Drawing.Size(450, 150)
         $formProgresso.StartPosition = "CenterScreen"
         $formProgresso.FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::FixedDialog
         $formProgresso.MaximizeBox = $false
 
         $labelStatus = New-Object System.Windows.Forms.Label
         $labelStatus.Location = New-Object System.Drawing.Point(10, 20)
-        $labelStatus.Size = New-Object System.Drawing.Size(360, 20)
+        $labelStatus.Size = New-Object System.Drawing.Size(420, 20)
         $labelStatus.Text = "Preparando para compactar..."
         $formProgresso.Controls.Add($labelStatus)
 
         $progressBar = New-Object System.Windows.Forms.ProgressBar
         $progressBar.Location = New-Object System.Drawing.Point(10, 50)
-        $progressBar.Size = New-Object System.Drawing.Size(360, 20)
+        $progressBar.Size = New-Object System.Drawing.Size(420, 20)
         $progressBar.Style = [System.Windows.Forms.ProgressBarStyle]::Continuous
         $formProgresso.Controls.Add($progressBar)
+
+        $labelDetails = New-Object System.Windows.Forms.Label
+        $labelDetails.Location = New-Object System.Drawing.Point(10, 80)
+        $labelDetails.Size = New-Object System.Drawing.Size(420, 20)
+        $labelDetails.Text = ""
+        $formProgresso.Controls.Add($labelDetails)
 
         $formProgresso.Show()
         [System.Windows.Forms.Application]::DoEvents()
 
         # Verifica se o 7-Zip está instalado
         if (-not (Test-Path $global:config.Paths.SevenZipPath)) {
-            $labelStatus.Text = "7-Zip não encontrado em $($global:config.Paths.SevenZipPath)"
+            $labelStatus.Text = "7-Zip nao encontrado!"
+            $labelDetails.Text = "Caminho: $($global:config.Paths.SevenZipPath)"
             [System.Windows.Forms.Application]::DoEvents()
             Start-Sleep -Seconds 3
             $formProgresso.Close()
-            Mostrar-Erro -mensagem "7-Zip não encontrado em $($global:config.Paths.SevenZipPath)`nPor favor, instale o 7-Zip primeiro."
+            Mostrar-Erro -mensagem "7-Zip nao encontrado em $($global:config.Paths.SevenZipPath)`nPor favor, instale o 7-Zip primeiro."
             return
         }
 
-        # Obtém todos os arquivos para compactar (ignorando pastas e extensões configuradas)
-        $arquivos = Get-ChildItem -Path $pastaSelecionada -File -Recurse | 
-                    Where-Object { 
-                        # Verifica se o arquivo não está em uma pasta ignorada
-                        $pastaPai = $_.DirectoryName.Replace($pastaSelecionada, "").TrimStart('\')
-                        $pastasIgnorar = $pastaPai -split '[\\/]' | Where-Object { $_ -in $global:config.Pastas.Ignorar }
-                        $pastasIgnorar.Count -eq 0 -and
-                        # Verifica se a extensão não está na lista de ignorar
-                        $global:config.Extensoes.IgnorarCompactacao -notcontains $_.Extension.ToLower()
-                    }
-
-        $totalArquivos = $arquivos.Count
-        $contador = 0
-        $logItens = @()
-
-        if ($totalArquivos -eq 0) {
-            $labelStatus.Text = "Nenhum arquivo encontrado para compactar!"
+        # Valida diretório de origem
+        if (-not (Test-Path -Path $pastaSelecionada -PathType Container)) {
+            $labelStatus.Text = "Diretório inválido!"
             [System.Windows.Forms.Application]::DoEvents()
             Start-Sleep -Seconds 2
+            $formProgresso.Close()
+            Mostrar-Erro -mensagem "O diretorio especificado nao existe: $pastaSelecionada"
+            return
+        }
+
+        # Lista para armazenar itens que já foram processados (para evitar duplicação)
+        $itensProcessados = @()
+        $logItens = @()
+        $erros = 0
+
+        # Primeiro processa as pastas (compacta cada pasta inteira)
+        $pastasParaCompactar = Get-ChildItem -Path $pastaSelecionada -Directory | 
+            Where-Object {
+                # Verifica se a pasta não está na lista de ignorar
+                $_.Name -notin $global:config.Pastas.Ignorar
+            }
+
+        # Depois processa os arquivos (apenas os que não estão em subpastas)
+        $arquivosParaCompactar = Get-ChildItem -Path $pastaSelecionada -File | 
+            Where-Object {
+                # Verifica se a extensão não está na lista de ignorar
+                $_.Extension -notin $global:config.Extensoes.IgnorarCompactacao
+            }
+
+        $totalItens = $pastasParaCompactar.Count + $arquivosParaCompactar.Count
+        $contador = 0
+
+        if ($totalItens -eq 0) {
+            $labelStatus.Text = "Nenhum item encontrado para compactar!"
+            $labelDetails.Text = "Verifique as configuracoes de pastas/extensoes ignoradas"
+            [System.Windows.Forms.Application]::DoEvents()
+            Start-Sleep -Seconds 3
             $formProgresso.Close()
             return
         }
 
-        # Agrupa arquivos por pasta para compactação
-        $arquivosPorPasta = $arquivos | Group-Object -Property DirectoryName
+        # Processa pastas primeiro
+        foreach ($pasta in $pastasParaCompactar) {
+            $contador++
+            $porcentagem = [math]::Round(($contador / $totalItens) * 100)
+            $labelStatus.Text = "Compactando pasta ($contador/$totalItens)"
+            $labelDetails.Text = $pasta.Name
+            $progressBar.Value = $porcentagem
+            [System.Windows.Forms.Application]::DoEvents()
 
-        foreach ($grupo in $arquivosPorPasta) {
-            $pastaAtual = $grupo.Name
-            $arquivosPasta = $grupo.Group
-            
-            foreach ($arquivo in $arquivosPasta) {
-                $contador++
-                $porcentagem = [math]::Round(($contador / $totalArquivos) * 100)
-                $labelStatus.Text = "Compactando ($contador/$totalArquivos): $($arquivo.Name)"
-                $progressBar.Value = $porcentagem
-                [System.Windows.Forms.Application]::DoEvents()
+            $nomeCompactado = "$($pasta.Name).7z"
+            $caminhoCompactado = Join-Path -Path $pasta.Parent.FullName -ChildPath $nomeCompactado
 
-                $nomeCompactado = "$($arquivo.BaseName).7z"
-                $caminhoCompactado = Join-Path -Path $pastaAtual -ChildPath $nomeCompactado
+            $argumentos = "a -t7z `"$caminhoCompactado`" `"$($pasta.FullName)`" -mx=9"
+            $processo = Start-Process -FilePath $global:config.Paths.SevenZipPath -ArgumentList $argumentos -Wait -NoNewWindow -PassThru
 
-                $argumentos = "a -t7z `"$caminhoCompactado`" `"$($arquivo.FullName)`" -mx=9"
-                $processo = Start-Process -FilePath $global:config.Paths.SevenZipPath -ArgumentList $argumentos -Wait -NoNewWindow -PassThru
+            if ($processo.ExitCode -eq 0) {
+                Remove-Item $pasta.FullName -Recurse -Force -ErrorAction SilentlyContinue
+                $logItens += "SUCESSO (PASTA): $($pasta.FullName) -> $caminhoCompactado"
+                $itensProcessados += $pasta.FullName
+            } else {
+                $erros++
+                $logItens += "ERRO: Falha ao compactar pasta $($pasta.FullName)"
+            }
+        }
 
-                if ($processo.ExitCode -eq 0) {
-                    Remove-Item $arquivo.FullName -Force -ErrorAction SilentlyContinue
-                    $logItens += "SUCESSO: $($arquivo.FullName) -> $caminhoCompactado"
-                } else {
-                    Write-Host "Erro ao compactar $($arquivo.Name)" -ForegroundColor Red
-                    $logItens += "ERRO: Falha ao compactar $($arquivo.FullName)"
-                }
+        # Processa arquivos individuais depois
+        foreach ($arquivo in $arquivosParaCompactar) {
+            $contador++
+            $porcentagem = [math]::Round(($contador / $totalItens) * 100)
+            $labelStatus.Text = "Compactando arquivo ($contador/$totalItens)"
+            $labelDetails.Text = $arquivo.Name
+            $progressBar.Value = $porcentagem
+            [System.Windows.Forms.Application]::DoEvents()
+
+            $nomeCompactado = "$($arquivo.BaseName).7z"
+            $caminhoCompactado = Join-Path -Path $arquivo.DirectoryName -ChildPath $nomeCompactado
+
+            $argumentos = "a -t7z `"$caminhoCompactado`" `"$($arquivo.FullName)`" -mx=9"
+            $processo = Start-Process -FilePath $global:config.Paths.SevenZipPath -ArgumentList $argumentos -Wait -NoNewWindow -PassThru
+
+            if ($processo.ExitCode -eq 0) {
+                Remove-Item $arquivo.FullName -Force -ErrorAction SilentlyContinue
+                $logItens += "SUCESSO: $($arquivo.FullName) -> $caminhoCompactado"
+                $itensProcessados += $arquivo.FullName
+            } else {
+                $erros++
+                $logItens += "ERRO: Falha ao compactar $($arquivo.FullName)"
             }
         }
 
         # Gera log da operação
         Gerar-Log -operacao "CompactarROMs" -itens $logItens
 
-        $labelStatus.Text = "Compactação concluída! $contador arquivos processados."
+        $labelStatus.Text = "Compactacao concluida! $contador itens processados."
+        $labelDetails.Text = "$erros erro(s) encontrado(s)"
         $progressBar.Value = 100
         [System.Windows.Forms.Application]::DoEvents()
-        Start-Sleep -Seconds 2
+        Start-Sleep -Seconds 3
         $formProgresso.Close()
 
     } catch {
@@ -613,7 +711,6 @@ function Compactar-ROMs {
         Mostrar-Erro -mensagem "Erro ao compactar: $_"
     }
 }
-
 # Função para realizar scraping completo (mídias e metadados)
 function Iniciar-Scraping {
     try {
@@ -625,7 +722,7 @@ function Iniciar-Scraping {
                 "TheGamesDB"    { return -not [string]::IsNullOrWhiteSpace($global:config.Scrapers.TheGamesDB.ApiKey) }
                 "MobyGames"     { return $true } # Placeholder para futura integração
                 "ArcadeDB"      { return $true } # Placeholder para futura integração
-                default          { return $false }
+                default         { return $false }
             }
         }
 
@@ -937,7 +1034,7 @@ function Obter-Dados-MobyGames {
 
         # Extrai resumo (sinopse) do jogo
         $descNode = $gamePage.ParsedHtml.getElementsByClassName("description")
-        $descricao = if ($descNode.length -gt 0) { $descNode[0].innerText.Trim() } else { "Descrição não disponível." }
+        $descricao = if ($descNode.length -gt 0) { $descNode[0].innerText.Trim() } else { "Descricao nao disponível." }
 
         # Extrai URL da capa (primeira imagem dentro da div "mainImage")
         $imgDiv = $gamePage.ParsedHtml.getElementsByClassName("mainImage")
@@ -996,7 +1093,7 @@ function Obter-Dados-ArcadeDB {
         if ($descNode.length -gt 0) {
             $desc = $descNode[0].innerText.Trim()
         } else {
-            $desc = "Descrição não disponível."
+            $desc = "Descricao não disponível."
         }
 
         # Extrair imagem capa (normalmente um img dentro de div "gameImg" ou similar)
@@ -1036,7 +1133,7 @@ function Renomear-Pastas-Proibidas {
 
         # Verifica se a pasta existe
         if (-not (Test-Path -Path $pastaRoms)) {
-            Mostrar-Erro -mensagem "Pasta de ROMs não encontrada: $pastaRoms"
+            Mostrar-Erro -mensagem "Pasta de ROMs nao encontrada: $pastaRoms"
             return
         }
 
@@ -1079,7 +1176,7 @@ function Renomear-Pastas-Proibidas {
         # Gera log da operação
         Gerar-Log -operacao "PastasProibidas" -itens $logItens
 
-        Atualizar-Progresso -mensagem "Verificação concluída! $pastasRenomeadas pastas renomeadas." -percentual 100
+        Atualizar-Progresso -mensagem "Verificacao concluida! $pastasRenomeadas pastas renomeadas." -percentual 100
         Start-Sleep -Seconds 2
 
     } catch {
@@ -1115,11 +1212,11 @@ function Descompactar-Arquivos {
 
         # Verifica se o 7-Zip está instalado
         if (-not (Test-Path $global:config.Paths.SevenZipPath)) {
-            $labelStatus.Text = "7-Zip não encontrado em $($global:config.Paths.SevenZipPath)"
+            $labelStatus.Text = "7-Zip nao encontrado em $($global:config.Paths.SevenZipPath)"
             [System.Windows.Forms.Application]::DoEvents()
             Start-Sleep -Seconds 3
             $formProgresso.Close()
-            Mostrar-Erro -mensagem "7-Zip não encontrado em $($global:config.Paths.SevenZipPath)`nPor favor, instale o 7-Zip primeiro."
+            Mostrar-Erro -mensagem "7-Zip nao encontrado em $($global:config.Paths.SevenZipPath)`nPor favor, instale o 7-Zip primeiro."
             return
         }
 
@@ -1160,7 +1257,7 @@ function Descompactar-Arquivos {
         # Gera log da operação
         Gerar-Log -operacao "DescompactarROMs" -itens $logItens
 
-        $labelStatus.Text = "Descompactação concluída! $contador arquivos processados."
+        $labelStatus.Text = "Descompactacao concluida! $contador arquivos processados."
         $progressBar.Value = 100
         [System.Windows.Forms.Application]::DoEvents()
         Start-Sleep -Seconds 2
@@ -1183,7 +1280,7 @@ function Descompactar-Arquivos {
 function Mostrar-Interface {
     $global:config = Carregar-Config
     if (-not $global:config) { 
-        [System.Windows.Forms.MessageBox]::Show("Não foi possível carregar a configuração. O aplicativo será fechado.", "Erro", "OK", "Error")
+        [System.Windows.Forms.MessageBox]::Show("Nao foi possivel carregar a configuracao. O aplicativo será fechado.", "Erro", "OK", "Error")
         return 
     }
 
@@ -1304,7 +1401,7 @@ function Mostrar-Interface {
     $global:formPrincipal.Controls.Add($btnSair)
 
     # Exibir janela
-    $global:formPrincipal.Topmost = $true
+    $global:formPrincipal.Topmost = $false
     $global:formPrincipal.Add_Shown({ $global:formPrincipal.Activate() })
     [void]$global:formPrincipal.ShowDialog()
 }

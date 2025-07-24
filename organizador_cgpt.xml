@@ -13,7 +13,7 @@
     </textos>
     
     <paths>
-        <romsPath>.\roms</romsPath>
+        <romsPath>E:\roms</romsPath>
         <logsPath>.\logs</logsPath>
         <sevenZipPath>C:\Program Files\7-Zip\7z.exe</sevenZipPath>
     </paths>
