@@ -64,6 +64,7 @@ function Carregar-Config {
                 BotaoDuplicatas = $xmlConfig.config.textos.botaoDuplicatas
                 BotaoCompactar = $xmlConfig.config.textos.botaoCompactar
                 BotaoDescompactar = $xmlConfig.config.textos.botaoDescompactar
+                botaoDupliNome = $xmlConfig.config.textos.botaoDupliNome
                 BotaoScraping = $xmlConfig.config.textos.botaoScraping
                 BotaoSair = $xmlConfig.config.textos.botaoSair
                 LabelRomsPath = $xmlConfig.config.textos.labelRomsPath
@@ -298,11 +299,11 @@ function Get-FileHashMD5 {
     param($filePath)
     
     try {
-        # Ignora arquivos muito pequenos (menos de 1KB)
-        if ((Get-Item $filePath).Length -lt 1024) {
-            return "smallfile_ignore"
-        }
-        
+    #     #Ignora arquivos muito pequenos (menos de 1KB)
+    #    if ((Get-Item $filePath).Length -lt 1024) {
+    #        return "smallfile_ignore"
+    #    }
+
         $hashAlgorithm = [System.Security.Cryptography.MD5]::Create()
         $fileStream = [System.IO.File]::OpenRead($filePath)
         $hashBytes = $hashAlgorithm.ComputeHash($fileStream)
@@ -315,6 +316,7 @@ function Get-FileHashMD5 {
     }
 }
 
+# Função principal para verificar duplicatas
 function Verificar-Duplicatas {
     param($pastaRoms)
 
@@ -406,12 +408,323 @@ function Verificar-Duplicatas {
         $btnFechar.Location = New-Object System.Drawing.Point(650, 530)
         $btnFechar.Size = New-Object System.Drawing.Size(120, 30)
         $btnFechar.Text = "Fechar"
-        $btnFechar.Add_Click({ $formDuplicatas.Close() }) # Removido Gerar-Log daqui (mantido no FormClosing)
+        $btnFechar.Add_Click({ $formDuplicatas.Close() })
+        $formDuplicatas.Controls.Add($btnFechar)
+
+        # Evento Shown do formulário - onde ocorre o processamento
+        $formDuplicatas.Add_Shown({
+            # Obtém todos os arquivos de ROM
+            $arquivos = Get-ChildItem -Path $pastaRoms -File -Recurse | 
+                Where-Object {
+                    $ext = $_.Extension.ToLower()
+                    (![string]::IsNullOrWhiteSpace($ext)) -and
+                    ($global:config.Extensoes.Roms -contains $ext) -and
+                    ($global:config.Extensoes.IgnorarDuplicatas -notcontains $ext) -and
+                    ($_.Length -ge 1024)
+                }
+
+            $totalArquivos = $arquivos.Count
+            $contador = 0
+            $hashes = @{}
+            $duplicatas = @{}
+            $script:logItens = @()
+
+            if ($totalArquivos -eq 0) {
+                $labelStatus.Text = "Nenhum arquivo encontrado para verificar!"
+                return
+            }
+
+            # Calcula hashes para todos os arquivos
+            foreach ($arquivo in $arquivos) {
+                $contador++
+                $porcentagem = [math]::Round(($contador / $totalArquivos) * 100)
+                $labelStatus.Text = "Calculando hash ($contador/$totalArquivos): $($arquivo.Name)"
+                $progressBar.Value = $porcentagem
+                [System.Windows.Forms.Application]::DoEvents()
+
+                $hash = Get-FileHashMD5 -filePath $arquivo.FullName
+                
+                if ($hash -ne $null -and $hash -ne "smallfile_ignore") {
+                    if (-not $hashes.ContainsKey($hash)) {
+                        $hashes[$hash] = @()
+                    }
+                    $hashes[$hash] += $arquivo.FullName
+                }
+            }
+
+            # Filtra apenas os que tem duplicatas
+            $duplicatas = $hashes.GetEnumerator() | Where-Object { $_.Value.Count -gt 1 }
+
+            if ($duplicatas -eq $null -or $duplicatas.Count -eq 0) {
+                $labelStatus.Text = "Nenhuma duplicata encontrada!"
+                return
+            }
+
+            # Preenche a lista com as duplicatas
+            foreach ($item in $duplicatas) {
+                $hash = $item.Key
+                $primeiro = $true
+
+                foreach ($caminho in $item.Value) {
+                    try {
+                        $arquivo = Get-Item -LiteralPath $caminho -ErrorAction Stop
+                        
+                        # Caminho relativo calculado corretamente
+                        $pastaBase = [System.IO.Path]::GetFullPath($pastaRoms).TrimEnd('\','/')
+                        $caminhoAbsoluto = [System.IO.Path]::GetFullPath($caminho)
+                        $caminhoRelativo = $caminhoAbsoluto.Substring($pastaBase.Length).TrimStart('\','/')
+
+                        $listItem = New-Object System.Windows.Forms.ListViewItem($hash)
+                        if (-not $primeiro) {
+                            $listItem.Checked = $true
+                        }
+                        $listItem.SubItems.Add($caminhoRelativo) | Out-Null
+                        $listItem.SubItems.Add("{0:N2} MB" -f ($arquivo.Length / 1MB)) | Out-Null
+                        $listItem.SubItems.Add($arquivo.LastWriteTime.ToString("dd/MM/yyyy")) | Out-Null
+                        $listItem.Tag = $caminhoAbsoluto
+                        $listItem.ToolTipText = $caminhoAbsoluto
+                        
+                        $listView.Items.Add($listItem) | Out-Null
+
+                        $script:logItens += "$hash | $caminhoRelativo | {0:N2} MB | $($arquivo.LastWriteTime)" -f ($arquivo.Length / 1MB)
+                        $primeiro = $false
+                    }
+                    catch {
+                        $script:logItens += "ERRO: Falha ao processar arquivo $caminho - $_"
+                        continue
+                    }
+                }
+
+                $listView.Items.Add((New-Object System.Windows.Forms.ListViewItem(""))) | Out-Null
+            }
+
+            if ($listView.Items.Count -gt 0) {
+                $labelStatus.Text = "Encontrados $($duplicatas.Count) conjuntos de arquivos duplicados!"
+                $btnExcluir.Enabled = $true
+            } else {
+                $labelStatus.Text = "Nenhuma duplicata encontrada!"
+            }           
+        })
+
+        # Configuração do botão Excluir - CORREÇÃO PRINCIPAL
+        $btnExcluir.Add_Click({
+            $itensParaRemover = @()
+            foreach ($item in $listView.CheckedItems) {
+                if ($item.Text -ne "") {
+                    try {
+                        if (Test-Path -LiteralPath $item.Tag) {
+                            Remove-Item -LiteralPath $item.Tag -Force -ErrorAction Stop
+                            $script:logItens += "EXCLUIDO: $($item.Tag)"
+                            $itensParaRemover += $item
+                        }
+                    }
+                    catch {
+                        [System.Windows.Forms.MessageBox]::Show("Falha ao excluir $($item.Tag): $_", "Erro", "OK", "Error")
+                        $script:logItens += "ERRO: Falha ao excluir $($item.Tag) - $_"
+                    }
+                }
+            }
+            
+            # Remove os itens da interface de forma segura
+            $listView.BeginUpdate()
+            try {
+                foreach ($item in $itensParaRemover) {
+                    $listView.Items.Remove($item)
+                }
+            }
+            finally {
+                $listView.EndUpdate()
+            }
+        })
+
+        # Configuração do duplo clique para abrir no Explorer - CORREÇÃO PRINCIPAL
+        $listView.Add_DoubleClick({
+            if ($listView.SelectedItems.Count -gt 0) {
+                $item = $listView.SelectedItems[0]
+                if ($item.Text -ne "") {
+                    $caminho = $item.Tag
+                    try {
+                        Start-Process "explorer.exe" -ArgumentList "/select,`"$caminho`""
+                    }
+                    catch {
+                        [System.Windows.Forms.MessageBox]::Show("Nao foi possivel abrir o arquivo: $_", "Erro", "OK", "Error")
+                    }
+                }
+            }
+        })
+
+        # Configuração da tecla Delete para exclusão
+        $formDuplicatas.KeyPreview = $true
+        $formDuplicatas.Add_KeyDown({
+            if ($_.KeyCode -eq 'Delete') {
+                $itensParaRemover = @()
+                foreach ($item in $listView.SelectedItems) {
+                    if ($item.Text -ne "") {
+                        try {
+                            if (Test-Path -LiteralPath $item.Tag) {
+                                Remove-Item -LiteralPath $item.Tag -Force -ErrorAction Stop
+                                $script:logItens += "EXCLUIDO (DEL): $($item.Tag)"
+                                $itensParaRemover += $item
+                            }
+                        }
+                        catch {
+                            [System.Windows.Forms.MessageBox]::Show("Falha ao excluir $($item.Tag): $_", "Erro", "OK", "Error")
+                            $script:logItens += "ERRO: Falha ao excluir $($item.Tag) - $_"
+                        }
+                    }
+                }
+                
+                # Remove os itens da interface de forma segura
+                $listView.BeginUpdate()
+                try {
+                    foreach ($item in $itensParaRemover) {
+                        $listView.Items.Remove($item)
+                    }
+                }
+                finally {
+                    $listView.EndUpdate()
+                }
+            }
+        })
+
+        # Configuração do log ao fechar o formulário
+        $formDuplicatas.Add_FormClosing({
+            if ($script:logItens.Count -gt 0) {
+                Gerar-Log -operacao "Duplicatas" -itens $script:logItens
+            }
+        })
+
+        $formDuplicatas.ShowDialog() | Out-Null
+
+    } catch {
+        [System.Windows.Forms.MessageBox]::Show("Ocorreu um erro: $_", "Erro", "OK", "Error")
+        if ($formDuplicatas -ne $null) {
+            $formDuplicatas.Close()
+        }
+    }
+}
+
+
+# Função para identificar e gerenciar arquivos duplicados com base em nome limpo
+# - Remove conteúdo entre (), [], {} no nome base
+# - Ignora espaços, hífens, underscores e diferenciação de maiúsculas
+# - Mostra interface com arquivos duplicados
+# - Permite excluir com tecla DEL
+# - Duplo clique abre o local do arquivo no Explorer
+
+function Get-NomeBaseLimpo {
+    param([string]$nome)
+
+    # Remove extensão
+    $base = [System.IO.Path]::GetFileNameWithoutExtension($nome)
+
+    # Remove conteúdo entre (), [], {}
+    $base = $base -replace '\([^)]*\)', ''
+    $base = $base -replace '\[[^\]]*\]', ''
+    $base = $base -replace '\{[^}]*\}', ''
+
+    # Remove espaços, traços, underscores e converte para minúsculas
+    $base = $base -replace '[\s_\-]', ''
+    return $base.ToLowerInvariant()
+}
+
+function VerDuplicatas-Nome {
+    param($pastaRoms)
+
+    try {
+        # Primeiro verifica se a pasta existe
+        if (-not (Test-Path -Path $pastaRoms)) {
+            [System.Windows.Forms.MessageBox]::Show("Pasta de ROMs nao encontrada: $pastaRoms", "Erro", "OK", "Error")
+            return
+        }
+
+        # Cria o formulário
+        $formDuplicatas = New-Object System.Windows.Forms.Form
+        $formDuplicatas.Text = "Verificacao de Duplicatas"
+        $formDuplicatas.Size = New-Object System.Drawing.Size(800, 600)
+        $formDuplicatas.StartPosition = "CenterScreen"
+        $formDuplicatas.TopMost = $true
+
+        $labelStatus = New-Object System.Windows.Forms.Label
+        $labelStatus.Location = New-Object System.Drawing.Point(10, 10)
+        $labelStatus.Size = New-Object System.Drawing.Size(760, 20)
+        $labelStatus.Text = "Preparando para verificar duplicatas..."
+        $formDuplicatas.Controls.Add($labelStatus)
+
+        $progressBar = New-Object System.Windows.Forms.ProgressBar
+        $progressBar.Location = New-Object System.Drawing.Point(10, 40)
+        $progressBar.Size = New-Object System.Drawing.Size(760, 20)
+        $progressBar.Style = [System.Windows.Forms.ProgressBarStyle]::Continuous
+        $formDuplicatas.Controls.Add($progressBar)
+
+        $listView = New-Object System.Windows.Forms.ListView
+        $listView.Location = New-Object System.Drawing.Point(10, 70)
+        $listView.Size = New-Object System.Drawing.Size(760, 450)
+        $listView.View = [System.Windows.Forms.View]::Details
+        $listView.FullRowSelect = $true
+        $listView.MultiSelect = $true
+        $listView.CheckBoxes = $true
+        $listView.Columns.Add("Nome Normalizado", 150) | Out-Null
+        $listView.Columns.Add("Arquivo", 350) | Out-Null
+        $listView.Columns.Add("Tamanho", 100) | Out-Null
+        $listView.Columns.Add("Data", 120) | Out-Null
+        $formDuplicatas.Controls.Add($listView)
+
+        # Botão para marcar/desmarcar todos
+        $btnMarcarTodos = New-Object System.Windows.Forms.Button
+        $btnMarcarTodos.Location = New-Object System.Drawing.Point(10, 530)
+        $btnMarcarTodos.Size = New-Object System.Drawing.Size(120, 30)
+        $btnMarcarTodos.Text = "Marcar Todos"
+        $btnMarcarTodos.Add_Click({
+            $marcar = ($btnMarcarTodos.Text -eq "Marcar Todos")
+            foreach ($item in $listView.Items) {
+                if ($item.Text -ne "") {
+                    $item.Checked = $marcar
+                }
+            }
+            $btnMarcarTodos.Text = if ($marcar) { "Desmarcar Todos" } else { "Marcar Todos" }
+        })
+        $formDuplicatas.Controls.Add($btnMarcarTodos)
+
+        # Botão para marcar apenas duplicados
+        $btnMarcarDuplicados = New-Object System.Windows.Forms.Button
+        $btnMarcarDuplicados.Location = New-Object System.Drawing.Point(140, 530)
+        $btnMarcarDuplicados.Size = New-Object System.Drawing.Size(150, 30)
+        $btnMarcarDuplicados.Text = "Marcar Duplicados"
+        $btnMarcarDuplicados.Add_Click({
+            $hashesProcessados = @{}
+            foreach ($item in $listView.Items) {
+                if ($item.Text -ne "") {
+                    if ($hashesProcessados.ContainsKey($item.Text)) {
+                        $item.Checked = $true
+                    } else {
+                        $hashesProcessados[$item.Text] = $true
+                        $item.Checked = $false
+                    }
+                }
+            }
+        })
+        $formDuplicatas.Controls.Add($btnMarcarDuplicados)
+
+        # Botão para excluir selecionados
+        $btnExcluir = New-Object System.Windows.Forms.Button
+        $btnExcluir.Location = New-Object System.Drawing.Point(300, 530)
+        $btnExcluir.Size = New-Object System.Drawing.Size(120, 30)
+        $btnExcluir.Text = "Excluir Selecionados"
+        $btnExcluir.Enabled = $false
+        $formDuplicatas.Controls.Add($btnExcluir)
+
+        # Botão para fechar
+        $btnFechar = New-Object System.Windows.Forms.Button
+        $btnFechar.Location = New-Object System.Drawing.Point(650, 530)
+        $btnFechar.Size = New-Object System.Drawing.Size(120, 30)
+        $btnFechar.Text = "Fechar"
+        $btnFechar.Add_Click({ $formDuplicatas.Close() })
         $formDuplicatas.Controls.Add($btnFechar)
 
         # Mostra o formulário antes do processamento para atualizar a interface
         $formDuplicatas.Add_Shown({
-        # Obtém todos os arquivos de ROM
+            # Obtém todos os arquivos de ROM
             $arquivos = Get-ChildItem -Path $pastaRoms -File -Recurse | 
                         Where-Object {
                             $global:config.Extensoes.Roms -contains $_.Extension.ToLower() -and
@@ -430,113 +743,163 @@ function Verificar-Duplicatas {
                 return
             }
 
-        # Calcula hashes para todos os arquivos
+            # Calcula hashes para todos os arquivos
             foreach ($arquivo in $arquivos) {
                 $contador++
                 $porcentagem = [math]::Round(($contador / $totalArquivos) * 100)
-                $labelStatus.Text = "Calculando hash ($contador/$totalArquivos): $($arquivo.Name)"
+                $labelStatus.Text = "Verificando ($contador/$totalArquivos): $($arquivo.Name)"
                 $progressBar.Value = $porcentagem
                 [System.Windows.Forms.Application]::DoEvents()
 
-                $hash = Get-FileHashMD5 -filePath $arquivo.FullName
-                if ($hash -ne $null -and $hash -ne "smallfile_ignore") {
-                    if (-not $hashes.ContainsKey($hash)) {
-                        $hashes[$hash] = @()
-                    }
-                    $hashes[$hash] += $arquivo.FullName
+                $nomeNormalizado = Get-NomeBaseLimpo -nome $arquivo.Name
+                if (-not $hashes.ContainsKey($nomeNormalizado)) {
+                    $hashes[$nomeNormalizado] = @()
                 }
+                $hashes[$nomeNormalizado] += $arquivo.FullName
             }
 
-        # Filtra apenas os que tem duplicatas
+            # Filtra apenas os que tem duplicatas
             $duplicatas = $hashes.GetEnumerator() | Where-Object { $_.Value.Count -gt 1 }
 
-            if ($duplicatas.Count -eq 0) {
+            if ($duplicatas -eq $null -or $duplicatas.Count -eq 0) {
                 $labelStatus.Text = "Nenhuma duplicata encontrada!"
                 return
             }
 
-        # Preenche a lista com as duplicatas
+            # Preenche a lista com as duplicatas
             foreach ($item in $duplicatas) {
-                $hash = $item.Key
-                $primeiro = $true
-
-                foreach ($caminho in $item.Value) {
-                    $arquivo = Get-Item -Path $caminho
-
-                    # === CORREÇÃO: Caminho relativo calculado corretamente ===
-                    $pastaBase = [System.IO.Path]::GetFullPath($pastaRoms).TrimEnd('\','/')
-                    $caminhoAbsoluto = [System.IO.Path]::GetFullPath($caminho)
-                    $caminhoRelativo = $caminhoAbsoluto.Substring($pastaBase.Length).TrimStart('\','/')
-
-                    $listItem = New-Object System.Windows.Forms.ListViewItem($hash)
-                    if (-not $primeiro) {
-                        $listItem.Checked = $true
-                    }
-                    $listItem.SubItems.Add($caminhoRelativo) | Out-Null
-                    $listItem.SubItems.Add("{0:N2} MB" -f ($arquivo.Length / 1MB)) | Out-Null
-                    $listItem.SubItems.Add($arquivo.LastWriteTime.ToString("dd/MM/yyyy")) | Out-Null
-                    $listItem.Tag = $caminhoAbsoluto
-                    $listItem.ToolTipText = $caminhoAbsoluto  # Caminho completo no tooltip
-                    $listView.Items.Add($listItem) | Out-Null
-
-                    $script:logItens += "$hash | $caminhoRelativo | {0:N2} MB | $($arquivo.LastWriteTime)" -f ($arquivo.Length / 1MB)
-                    $primeiro = $false
-                }
-
-            # Adiciona uma linha separadora
-                $listView.Items.Add((New-Object System.Windows.Forms.ListViewItem(""))) | Out-Null
-            }
-
-            $labelStatus.Text = "Encontrados $($duplicatas.Count) conjuntos de arquivos duplicados!"
-            $btnExcluir.Enabled = $true
-        })
-
-        # Configuração do botão Excluir
-        $btnExcluir.Add_Click({
-            # === NOVO: Exclusão direta (sem confirmação) ===
-            $itensSelecionados = @($listView.CheckedItems | Where-Object { $_.Text -ne "" })
-            foreach ($item in $itensSelecionados) {
                 try {
-                    Remove-Item -Path $item.Tag -Force -ErrorAction Stop
-                    $script:logItens += "EXCLUIDO: $($item.Tag)"
-                    $listView.Items.Remove($item)
+                    $nomeNormalizado = $item.Key
+                    $primeiro = $true
+
+                    foreach ($caminho in $item.Value) {
+                        try {
+                            $arquivo = Get-Item -LiteralPath $caminho -ErrorAction Stop
+
+                            # Caminho relativo calculado corretamente
+                            $pastaBase = [System.IO.Path]::GetFullPath($pastaRoms).TrimEnd('\','/')
+                            $caminhoAbsoluto = [System.IO.Path]::GetFullPath($caminho)
+                            $caminhoRelativo = $caminhoAbsoluto.Substring($pastaBase.Length).TrimStart('\','/')
+
+                            $listItem = New-Object System.Windows.Forms.ListViewItem($nomeNormalizado)
+                            if (-not $primeiro) {
+                                $listItem.Checked = $true
+                            }
+                            $listItem.SubItems.Add($caminhoRelativo) | Out-Null
+                            $listItem.SubItems.Add("{0:N2} MB" -f ($arquivo.Length / 1MB)) | Out-Null
+                            $listItem.SubItems.Add($arquivo.LastWriteTime.ToString("dd/MM/yyyy")) | Out-Null
+                            $listItem.Tag = $caminhoAbsoluto
+                            $listItem.ToolTipText = $caminhoAbsoluto
+                            
+                            $listView.Items.Add($listItem) | Out-Null
+
+                            $script:logItens += "$nomeNormalizado | $caminhoRelativo | {0:N2} MB | $($arquivo.LastWriteTime)" -f ($arquivo.Length / 1MB)
+                            $primeiro = $false
+                        }
+                        catch {
+                            $script:logItens += "ERRO: Falha ao processar arquivo $caminho - $_"
+                            continue
+                        }
+                    }
+
+                    $listView.Items.Add((New-Object System.Windows.Forms.ListViewItem(""))) | Out-Null
                 }
                 catch {
-                    $script:logItens += "ERRO: Falha ao excluir $($item.Tag) - $_"
+                    $script:logItens += "ERRO: Falha ao processar grupo $nomeNormalizado - $_"
+                    continue
                 }
             }
+
+            if ($listView.Items.Count -gt 0) {
+                $labelStatus.Text = "Encontrados $($duplicatas.Count) conjuntos de arquivos duplicados!"
+                $btnExcluir.Enabled = $true
+            } else {
+                $labelStatus.Text = "Nenhuma duplicata encontrada!"
+            }           
         })
 
-        # === NOVO: Clique duplo para abrir no Explorer ===
-        $listView.Add_DoubleClick({
-            if ($listView.SelectedItems.Count -gt 0) {
-                $item = $listView.SelectedItems[0]
-                $caminho = $item.Tag
-                if ($caminho -and (Test-Path $caminho)) {
-                    Start-Process explorer "/select,`"$caminho`""
-                }
-            }
-        })
-
-        # === NOVO: Tecla DELETE para exclusão direta ===
-        $formDuplicatas.KeyPreview = $true
-        $formDuplicatas.Add_KeyDown({
-            if ($_.KeyCode -eq 'Delete') {
-                $itensSelecionados = @($listView.SelectedItems | Where-Object { $_.Text -ne "" })
-                foreach ($item in $itensSelecionados) {
+        # Configuração do botão Excluir - CORREÇÃO PRINCIPAL
+        $btnExcluir.Add_Click({
+            $itensParaRemover = @()
+            foreach ($item in $listView.CheckedItems) {
+                if ($item.Text -ne "") {
                     try {
-                        Remove-Item -Path $item.Tag -Force -ErrorAction Stop
-                        $script:logItens += "EXCLUIDO (DEL): $($item.Tag)"
-                        $listView.Items.Remove($item)
+                        if (Test-Path -LiteralPath $item.Tag) {
+                            Remove-Item -LiteralPath $item.Tag -Force -ErrorAction Stop
+                            $script:logItens += "EXCLUIDO: $($item.Tag)"
+                            $itensParaRemover += $item
+                        }
                     }
                     catch {
+                        [System.Windows.Forms.MessageBox]::Show("Falha ao excluir $($item.Tag): $_", "Erro", "OK", "Error")
                         $script:logItens += "ERRO: Falha ao excluir $($item.Tag) - $_"
                     }
                 }
             }
+            
+            # Remove os itens da interface de forma segura
+            $listView.BeginUpdate()
+            try {
+                foreach ($item in $itensParaRemover) {
+                    $listView.Items.Remove($item)
+                }
+            }
+            finally {
+                $listView.EndUpdate()
+            }
         })
 
-        # === CORREÇÃO: Log gerado uma única vez no fechamento ===
+        # Configuração do duplo clique para abrir no Explorer - CORREÇÃO PRINCIPAL
+        $listView.Add_DoubleClick({
+            if ($listView.SelectedItems.Count -gt 0) {
+                $item = $listView.SelectedItems[0]
+                if ($item.Text -ne "") {
+                    $caminho = $item.Tag
+                    try {
+                        Start-Process "explorer.exe" -ArgumentList "/select,`"$caminho`""
+                    }
+                    catch {
+                        [System.Windows.Forms.MessageBox]::Show("Nao foi possivel abrir o arquivo: $_", "Erro", "OK", "Error")
+                    }
+                }
+            }
+        })
+
+        # Configuração da tecla Delete para exclusão
+        $formDuplicatas.KeyPreview = $true
+        $formDuplicatas.Add_KeyDown({
+            if ($_.KeyCode -eq 'Delete') {
+                $itensParaRemover = @()
+                foreach ($item in $listView.SelectedItems) {
+                    if ($item.Text -ne "") {
+                        try {
+                            if (Test-Path -LiteralPath $item.Tag) {
+                                Remove-Item -LiteralPath $item.Tag -Force -ErrorAction Stop
+                                $script:logItens += "EXCLUIDO (DEL): $($item.Tag)"
+                                $itensParaRemover += $item
+                            }
+                        }
+                        catch {
+                            [System.Windows.Forms.MessageBox]::Show("Falha ao excluir $($item.Tag): $_", "Erro", "OK", "Error")
+                            $script:logItens += "ERRO: Falha ao excluir $($item.Tag) - $_"
+                        }
+                    }
+                }
+                
+                # Remove os itens da interface de forma segura
+                $listView.BeginUpdate()
+                try {
+                    foreach ($item in $itensParaRemover) {
+                        $listView.Items.Remove($item)
+                    }
+                }
+                finally {
+                    $listView.EndUpdate()
+                }
+            }
+        })
+
+        # Configuração do log ao fechar o formulário
         $formDuplicatas.Add_FormClosing({
             if ($script:logItens.Count -gt 0) {
                 Gerar-Log -operacao "Duplicatas" -itens $script:logItens
@@ -547,10 +910,11 @@ function Verificar-Duplicatas {
 
     } catch {
         [System.Windows.Forms.MessageBox]::Show("Ocorreu um erro: $_", "Erro", "OK", "Error")
-        $formDuplicatas.Close()
+        if ($formDuplicatas -ne $null) {
+            $formDuplicatas.Close()
+        }
     }
 }
-
 
 function Compactar-ROMs {
     param(
@@ -1363,6 +1727,10 @@ function Mostrar-Interface {
         }
     }
 
+    $btnDplNome = Criar-Botao -Texto $global:config.Textos.botaoDupliNome -X 340 -Y 80 -Acao {
+        VerDuplicatas-Nome -pastaRoms $global:config.Paths.RomsPath
+    }
+
     $btnScraping = Criar-Botao -Texto $global:config.Textos.BotaoScraping -X 180 -Y 140 -Largura 200 -Acao {
         $fonte = Iniciar-Scraping #Selecionar-Fonte-Scraping
         if ($fonte) {
@@ -1370,9 +1738,10 @@ function Mostrar-Interface {
         }
     }
 
+
     # Adicionar botões ao painel
     $panel.Controls.AddRange(@($btnOrganizar, $btnPastasProibidas, $btnDuplicatas, 
-                             $btnCompactar, $btnDescompactar, $btnScraping))
+                             $btnCompactar, $btnDescompactar, $btnDplNome, $btnScraping))
 
     # Barra de progresso e status
     $global:progressBar = New-Object Windows.Forms.ProgressBar
